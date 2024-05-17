@@ -1,163 +1,190 @@
-#include <stdio.h>      // Biblioteca padrão de entrada e saída
-#include <unistd.h>     // Biblioteca para usleep() e manipulação de POSIX
-#include <stdlib.h>     // Biblioteca para funções gerais, como rand()
-#include <termios.h>    // Biblioteca para controle do terminal
-#include <fcntl.h>      // Biblioteca para manipulação de arquivos
+#include "screen.h"
+#include <unistd.h>
+#include <stdlib.h>
+#include <time.h>
+#include <termios.h>
+#include <fcntl.h>
 
-#define WIDTH 50      // Define a largura do campo de jogo
-#define HEIGHT 25      // Define a altura do campo de jogo
+// Estruturas para os objetos do jogo
+typedef struct {
+    int x, y;
+} GameObject;
 
-int playerX, bulletX, bulletY, enemyX, enemyY, gameOver;
-char screen[HEIGHT][WIDTH];  // Matriz que representa a tela do jogo
+typedef struct {
+    GameObject invaders[5];
+    GameObject player;
+    GameObject bullets[5];
+    int numInvaders;
+    int numBullets;
+    int score;
+} Game;
 
-// Função que checa se uma tecla foi pressionada
+// Funções auxiliares
 int kbhit(void) {
     struct termios oldt, newt;
     int ch;
     int oldf;
 
-    // Salva a configuração atual do terminal
     tcgetattr(STDIN_FILENO, &oldt);
     newt = oldt;
-    // Desativa entrada canônica e eco
     newt.c_lflag &= ~(ICANON | ECHO);
     tcsetattr(STDIN_FILENO, TCSANOW, &newt);
-    // Define o modo de leitura não bloqueante
     oldf = fcntl(STDIN_FILENO, F_GETFL, 0);
     fcntl(STDIN_FILENO, F_SETFL, oldf | O_NONBLOCK);
 
     ch = getchar();
 
-    // Restaura as configurações originais do terminal
     tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
     fcntl(STDIN_FILENO, F_SETFL, oldf);
 
     if (ch != EOF) {
-        ungetc(ch, stdin);  // Devolve o caractere lido ao buffer
+        ungetc(ch, stdin);
         return 1;
     }
 
     return 0;
 }
 
-// Inicializa o jogo
-void initialize() {
-    int i, j;
-    playerX = WIDTH / 2;
-    bulletX = -1;
-    bulletY = -1;
-    enemyX = rand() % (WIDTH - 2) + 1;
-    enemyY = 1;
-    gameOver = 0;
+// Inicializar o jogo
+void initGame(Game *game) {
+    game->numInvaders = 0;  // Inicia sem invasores
+    game->numBullets = 0;
+    game->score = 0;
+
+    game->player.x = MAXX / 2;
+    game->player.y = MAXY - 2;
+
+    srand(time(NULL));
+}
+
+// Desenhar o jogo na tela
+void drawGame(Game *game) {
+    screenClear();
     
-    // Preenche a tela com bordas e espaço vazio
-    for (i = 0; i < HEIGHT; i++) {
-        for (j = 0; j < WIDTH; j++) {
-            if (i == 0 || i == HEIGHT - 1 || j == 0 || j == WIDTH - 1)
-                screen[i][j] = '#';
-            else
-                screen[i][j] = ' ';
-        }
+    // Desenhar invasores
+    for (int i = 0; i < game->numInvaders; i++) {
+        screenGotoxy(game->invaders[i].x, game->invaders[i].y);
+        printf("W");
     }
-    screen[HEIGHT - 2][playerX] = '|';  // Coloca o jogador na posição inicial
+    
+    // Desenhar jogador
+    screenGotoxy(game->player.x, game->player.y);
+    printf("^");
+    
+    // Desenhar tiros
+    for (int i = 0; i < game->numBullets; i++) {
+        screenGotoxy(game->bullets[i].x, game->bullets[i].y);
+        printf("|");
+    }
+
+    // Exibir pontuação
+    screenGotoxy(1, MAXY + 1);
+    printf("Score: %d", game->score);
+    
+    screenUpdate();
 }
 
-// Desenha a tela do jogo
-void draw() {
-    system("clear || printf '\\033c'");  // Limpa a tela
-    int i, j;
-    for (i = 0; i < HEIGHT; i++) {
-        for (j = 0; j < WIDTH; j++) {
-            printf("%c", screen[i][j]);
+// Atualizar a lógica do jogo
+void updateGame(Game *game) {
+    // Mover tiros
+    for (int i = 0; i < game->numBullets; i++) {
+        game->bullets[i].y--;
+        if (game->bullets[i].y < MINY) {
+            // Remover tiro fora da tela
+            for (int j = i; j < game->numBullets - 1; j++) {
+                game->bullets[j] = game->bullets[j + 1];
+            }
+            game->numBullets--;
+            i--;
         }
-        printf("\n");
+    }
+
+    // Mover invasores
+    for (int i = 0; i < game->numInvaders; i++) {
+        game->invaders[i].y++;
+        if (game->invaders[i].y >= MAXY) {
+            // Remover invasor que passou do jogador
+            for (int j = i; j < game->numInvaders - 1; j++) {
+                game->invaders[j] = game->invaders[j + 1];
+            }
+            game->numInvaders--;
+            i--;
+        } else if (game->invaders[i].x == game->player.x && game->invaders[i].y == game->player.y) {
+            // Jogo termina quando um invasor toca o jogador
+            game->numInvaders = 0;
+            game->numBullets = 0;
+            printf("\nGAME OVER!\n");
+            screenDestroy();
+            exit(0);
+        }
+    }
+    
+    // Checar colisões (simples)
+    for (int i = 0; i < game->numBullets; i++) {
+        for (int j = 0; j < game->numInvaders; j++) {
+            if (game->bullets[i].x == game->invaders[j].x && game->bullets[i].y == game->invaders[j].y) {
+                // Remover invasor
+                for (int k = j; k < game->numInvaders - 1; k++) {
+                    game->invaders[k] = game->invaders[k + 1];
+                }
+                game->numInvaders--;
+                game->score += 10; // Aumentar pontuação por invasor eliminado
+                j--;
+                
+                // Remover tiro
+                for (int k = i; k < game->numBullets - 1; k++) {
+                    game->bullets[k] = game->bullets[k + 1];
+                }
+                game->numBullets--;
+                i--;
+                break;
+            }
+        }
+    }
+
+    // Gerar novos invasores aleatoriamente
+    if (game->numInvaders < 5) {
+        if (rand() % 20 == 0) {  // Probabilidade de gerar um novo invasor
+            game->invaders[game->numInvaders].x = rand() % (MAXX - MINX + 1) + MINX;
+            game->invaders[game->numInvaders].y = MINY;
+            game->numInvaders++;
+        }
     }
 }
 
-// Atualiza o estado do jogo
-void update() {
+// Controlar a entrada do usuário
+void handleInput(Game *game) {
     if (kbhit()) {
-        char key = getchar();
-        // Movimento do jogador
-        if (key == 'a' && playerX > 1) {
-            screen[HEIGHT - 2][playerX] = ' ';
-            playerX--;
-            screen[HEIGHT - 2][playerX] = '|';
-        } else if (key == 'd' && playerX < WIDTH - 2) {
-            screen[HEIGHT - 2][playerX] = ' ';
-            playerX++;
-            screen[HEIGHT - 2][playerX] = '|';
-        } else if (key == ' ' && bulletY == -1) {
-            // Disparo do tiro
-            bulletX = playerX;
-            bulletY = HEIGHT - 3;
+        char ch = getchar();
+        
+        if (ch == 'a' && game->player.x > MINX) {
+            game->player.x--;
+        } else if (ch == 'd' && game->player.x < MAXX - 1) {
+            game->player.x++;
+        } else if (ch == ' ') {
+            // Disparar tiro
+            if (game->numBullets < 5) {
+                game->bullets[game->numBullets].x = game->player.x;
+                game->bullets[game->numBullets].y = game->player.y - 1;
+                game->numBullets++;
+            }
         }
     }
-    // Atualização do tiro
-    if (bulletY >= 1) {
-        screen[bulletY][bulletX] = ' ';
-        bulletY--;
-        // Checa se o tiro atingiu o inimigo
-        if (bulletY == enemyY && bulletX == enemyX) {
-            bulletY = -1;
-            enemyX = rand() % (WIDTH - 2) + 1;
-            enemyY = 1;
-        } else {
-            screen[bulletY][bulletX] = '*';
-        }
-    } else if (bulletY == 0) {
-        bulletY = -1;
-        screen[bulletY][bulletX] = ' ';
-    }
-
-    // Movimento do inimigo
-    if (enemyY < HEIGHT - 2) {
-        screen[enemyY][enemyX] = ' ';
-        enemyY++;
-        screen[enemyY][enemyX] = 'Z';
-
-        // Checa colisão com o jogador
-        if (enemyY == HEIGHT - 2 && enemyX == playerX) {
-            gameOver = 1;
-        }
-    } else {
-        // Reinicia a posição do inimigo ao atingir o chão
-        enemyX = rand() % (WIDTH - 2) + 1;
-        enemyY = 1;
-    }
-}
-
-// Mostra a tela de fim de jogo
-void gameOverScreen() {
-    system("clear || printf '\\033c'");
-    printf("Game Over!\n");
-}
-
-// Mostra o menu inicial
-void menu() {
-    printf("Pressione a tecla enter para jogar.\n");
-    getchar(); 
 }
 
 int main() {
-    int playAgain = 1;
-    while (playAgain) {
-        menu(); 
-        initialize();
-        while (!gameOver) {
-            draw();
-            update();
-            usleep(100000);  // Espera 100 ms
-        }
-        gameOverScreen();
-        printf("Selecione Enter para jogar novamente ou 's' para sair.\n");
-        char input = getchar();
-        if (input == 's' || input == 'S')
-            playAgain = 0;
-        else {
-            gameOver = 0;
-            getchar(); // Consumir o caractere de nova linha
-        }
+    Game game;
+    
+    screenInit(1);
+    initGame(&game);
+    
+    while (1) {
+        handleInput(&game);
+        updateGame(&game);
+        drawGame(&game);
+        usleep(100000); // Pequena pausa para controle da velocidade do jogo
     }
+    
+    screenDestroy();
     return 0;
 }
