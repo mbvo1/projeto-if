@@ -1,6 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h> // Adicionada para usar rand()
-#include <time.h> // Adicionada para usar time() para inicializar o gerador de números aleatórios
 #include "screen.h"
 #include "timer.h"
 #include "keyboard.h"
@@ -22,13 +20,11 @@ Object bullets[MAX_BULLETS];
 int numInvaders = MAX_INVADERS;
 int numBullets = 0;
 int score = 0;  // Variável para armazenar a pontuação
-int gameOver = 0; // Variável para controlar o fim do jogo
 
 void initGame() {
     screenInit(0);  // Não desenhar bordas
     keyboardInit();
     timerInit(100); // 100 ms de intervalo para o temporizador
-    srand(time(NULL)); // Inicializar gerador de números aleatórios
 
     // Inicializar o jogador
     player.x = MAXX / 2;
@@ -101,22 +97,6 @@ void shootBullet() {
     }
 }
 
-void updateInvaders() {
-    // Fazer dois invasores descerem por vez aleatoriamente
-    for (int i = 0; i < 2; i++) {
-        if (numInvaders > 0) {
-            int invaderIndex = rand() % numInvaders;
-            invaders[invaderIndex].y++;
-            if (invaders[invaderIndex].y >= player.y && invaders[invaderIndex].x == player.x) {
-                gameOver = 1;
-            }
-            if (invaders[invaderIndex].y > MAXY) {
-                invaders[invaderIndex].y = 1; // Reintroduzir o invasor no topo
-            }
-        }
-    }
-}
-
 void updateGame() {
     if (keyhit()) {
         int ch = readch();
@@ -130,7 +110,6 @@ void updateGame() {
     }
 
     updateBullets();
-    updateInvaders();
 
     // Verificar colisões com os invasores
     for (int i = 0; i < numInvaders; i++) {
@@ -161,7 +140,7 @@ void updateGame() {
 int main() {
     initGame();
 
-    while (numInvaders > 0 && !gameOver) {
+    while (numInvaders > 0) {
         if (timerTimeOver()) {
             updateGame();
             drawGame();
