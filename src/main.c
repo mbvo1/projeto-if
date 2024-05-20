@@ -6,11 +6,11 @@
 #include "timer.h"
 #include "keyboard.h"
 
-#define PLAYER_SYMBOL 'A'
-#define INVADER_SYMBOL 'W'
+#define PLAYER_SYMBOL 'H'
+#define INVADER_SYMBOL 'Z'
 #define BULLET_SYMBOL '|'
-#define MAX_INVADERS 10
-#define MAX_BULLETS 5
+#define MAX_INVADERS 20
+#define MAX_BULLETS 3 
 
 typedef struct {
     int x, y;
