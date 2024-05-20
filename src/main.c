@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h> // Adicionada para usar rand()
 #include <time.h> // Adicionada para usar time() para inicializar o gerador de números aleatórios
+#include <string.h> // Adicionada para usar funções de manipulação de strings
 #include "screen.h"
 #include "timer.h"
 #include "keyboard.h"
@@ -23,6 +24,8 @@ int numInvaders = MAX_INVADERS;
 int numBullets = 0;
 int score = 0;  // Variável para armazenar a pontuação
 int gameOver = 0; // Variável para controlar o fim do jogo
+
+char playerName[50]; // Variável para armazenar o nome do jogador
 
 void initGame() {
     screenInit(0);  // Não desenhar bordas
@@ -159,6 +162,11 @@ void updateGame() {
 }
 
 int main() {
+    // Solicitar o nome do jogador
+    printf("Digite seu nome: ");
+    fgets(playerName, 50, stdin);
+    playerName[strcspn(playerName, "\n")] = 0; // Remover o caractere de nova linha
+
     initGame();
 
     while (numInvaders > 0 && !gameOver) {
@@ -170,6 +178,15 @@ int main() {
 
     destroyGame();
     printf("Game Over! Final Score: %d\n", score);
+
+    // Gravar o nome e o score no arquivo score.txt
+    FILE *file = fopen("score.txt", "a");
+    if (file != NULL) {
+        fprintf(file, "Nome: %s, Score: %d\n", playerName, score);
+        fclose(file);
+    } else {
+        printf("Erro ao abrir o arquivo score.txt\n");
+    }
 
     return 0;
 }
