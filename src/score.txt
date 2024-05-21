@@ -2,3 +2,7 @@ Nome: rodrigo , Score: 20
 Nome: Brazzz, Score: 90
 Nome: caminha , Score: 90
 Nome: aaaa, Score: 50
+Nome: rodrigo, Score: 190
+Nome: teste, Score: 100
+Nome: teste2, Score: 40
+Nome: wwwww, Score: 20

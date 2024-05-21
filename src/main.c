@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h> // Adicionada para usar rand()
 #include <time.h> // Adicionada para usar time() para inicializar o gerador de números aleatórios
-#include <string.h> // Adicionada para usar funções de manipulação de strings
+#include <string.h> 
 #include "screen.h"
 #include "timer.h"
 #include "keyboard.h"
@@ -28,10 +28,10 @@ int gameOver = 0; // Variável para controlar o fim do jogo
 char playerName[50]; // Variável para armazenar o nome do jogador
 
 void initGame() {
-    screenInit(0);  // Não desenhar bordas
+    screenInit(0);  // sem bordas!!!!
     keyboardInit();
-    timerInit(100); // 100 ms de intervalo para o temporizador
-    srand(time(NULL)); // Inicializar gerador de números aleatórios
+    timerInit(100); // 100 milissegundos tempo de intervalo para o temporizador
+    srand(time(NULL)); // Inicializar gerador de números aleatórios para os inimgos descerem aleatoriamente, sn fica uma merda 
 
     // Inicializar o jogador
     player.x = MAXX / 2;
