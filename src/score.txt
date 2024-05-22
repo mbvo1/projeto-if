@@ -6,3 +6,5 @@ Nome: rodrigo, Score: 190
 Nome: teste, Score: 100
 Nome: teste2, Score: 40
 Nome: wwwww, Score: 20
+Nome: Ana, Score: 110
+Nome: camisa1, Score: 40

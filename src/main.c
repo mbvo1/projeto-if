@@ -10,15 +10,15 @@
 #define INVADER_SYMBOL 'Z'
 #define BULLET_SYMBOL '|'
 #define MAX_INVADERS 20
-#define MAX_BULLETS 3 
+#define MAX_BULLETS 3
 
 typedef struct {
     int x, y;
 } Object;
 
 Object player;
-Object invaders[MAX_INVADERS];
-Object bullets[MAX_BULLETS];
+Object* invaders;
+Object* bullets;
 
 int numInvaders = MAX_INVADERS;
 int numBullets = 0;
@@ -33,6 +33,10 @@ void initGame() {
     timerInit(100); // 100 milissegundos tempo de intervalo para o temporizador
     srand(time(NULL)); // Inicializar gerador de números aleatórios para os inimgos descerem aleatoriamente, sn fica uma merda 
 
+    // Alocar memória para os invasores e balas
+    invaders = (Object*)malloc(MAX_INVADERS * sizeof(Object));
+    bullets = (Object*)malloc(MAX_BULLETS * sizeof(Object));
+
     // Inicializar o jogador
     player.x = MAXX / 2;
     player.y = MAXY - 2;
@@ -45,6 +49,10 @@ void initGame() {
 }
 
 void destroyGame() {
+    // Liberar a memória alocada para os invasores e balas
+    free(invaders);
+    free(bullets);
+    
     keyboardDestroy();
     screenDestroy();
     timerDestroy();
