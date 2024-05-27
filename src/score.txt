@@ -8,3 +8,10 @@ Nome: teste2, Score: 40
 Nome: wwwww, Score: 20
 Nome: Ana, Score: 110
 Nome: camisa1, Score: 40
+Nome: rodrigo , Score: 40
+Nome: llklk, Score: 160
+Nome: rrrr, Score: 10
+Nome: aaa, Score: 30
+Nome: qqqq, Score: 40
+Nome: aaa, Score: 20
+Nome: ddddd, Score: 0

@@ -16,35 +16,41 @@ typedef struct {
     int x, y;
 } Object;
 
+// Variáveis globais de tipo struct Object
+// Usamos typedef ao invés de struct pra não ter que escrever struct toda hora
 Object player;
 Object* invaders;
 Object* bullets;
-
-int numInvaders = MAX_INVADERS;
-int numBullets = 0;
-int score = 0;  // Variável para armazenar a pontuação
-int gameOver = 0; // Variável para controlar o fim do jogo
-
+int numInvaders;
+int numBullets;
+int score;
+int gameOver;
 char playerName[50]; // Variável para armazenar o nome do jogador
 
 void initGame() {
     screenInit(0);  // sem bordas!!!!
     keyboardInit();
     timerInit(100); // 100 milissegundos tempo de intervalo para o temporizador
-    srand(time(NULL)); // Inicializar gerador de números aleatórios para os inimgos descerem aleatoriamente, sn fica uma merda 
+    srand(time(NULL)); // Inicializar gerador de números aleatórios para os inimigos descerem aleatoriamente, se não fica uma merda 
 
     // Alocar memória para os invasores e balas
     invaders = (Object*)malloc(MAX_INVADERS * sizeof(Object));
     bullets = (Object*)malloc(MAX_BULLETS * sizeof(Object));
 
+    // Inicializar variáveis globais
+    numInvaders = MAX_INVADERS;
+    numBullets = 0;
+    score = 0;
+    gameOver = 0;
+
     // Inicializar o jogador
-    player.x = MAXX / 2;
-    player.y = MAXY - 2;
+    player.x = MAXX / 2; //define a posição horizontal do jogador 
+    player.y = MAXY - 2; //define a posição vertical do jogador na parte inferior da tela
 
     // Inicializar os invasores
     for (int i = 0; i < MAX_INVADERS; i++) {
-        invaders[i].x = (i % 5) * 10 + 5;
-        invaders[i].y = (i / 5) * 2 + 1;
+        invaders[i].x = (i % 5) * 10 + 5; //define a posição horizontal do inimigo 
+        invaders[i].y = (i / 5) * 2 + 1; //define a posição vertical do inimigo
     }
 }
 
@@ -169,32 +175,71 @@ void updateGame() {
     }
 }
 
-int main() {
-    // Solicitar o nome do jogador
-    printf("Digite seu nome: ");
-    fgets(playerName, 50, stdin);
-    playerName[strcspn(playerName, "\n")] = 0; // Remover o caractere de nova linha
-
-    initGame();
-
-    while (numInvaders > 0 && !gameOver) {
-        if (timerTimeOver()) {
-            updateGame();
-            drawGame();
-        }
-    }
-
-    destroyGame();
-    printf("Game Over! Final Score: %d\n", score);
-
-    // Gravar o nome e o score no arquivo score.txt
-    FILE *file = fopen("score.txt", "a");
+void showScores() {
+    FILE *file = fopen("score.txt", "r");
     if (file != NULL) {
-        fprintf(file, "Nome: %s, Score: %d\n", playerName, score);
+        char line[100];
+        while (fgets(line, sizeof(line), file)) {
+            printf("%s", line);
+        }
         fclose(file);
     } else {
-        printf("Erro ao abrir o arquivo score.txt\n");
+        printf("Nenhum score disponível.\n");
     }
+}
+
+// Função principal
+int main() {
+    int choice;
+
+    // Menu principal
+    do {
+        printf("Menu:\n");
+        printf("1: Ver score\n");
+        printf("2: Jogar o jogo\n");
+        printf("3: Sair\n");
+        printf("Escolha uma opção: ");
+        scanf("%d", &choice);
+        getchar(); // Limpar o buffer do teclado
+
+        switch (choice) {
+            case 1:
+                showScores();
+                break;
+            case 2:
+                // Solicitar o nome do jogador
+                printf("Digite seu nome: ");
+                fgets(playerName, 50, stdin);
+                playerName[strcspn(playerName, "\n")] = 0; // Remover o caractere de nova linha
+
+                initGame();
+
+                while (numInvaders > 0 && !gameOver) {
+                    if (timerTimeOver()) {
+                        updateGame();
+                        drawGame();
+                    }
+                }
+
+                destroyGame();
+                printf("Game Over! Final Score: %d\n", score);
+
+                // Gravar o nome e o score no arquivo score.txt
+                FILE *file = fopen("score.txt", "a");
+                if (file != NULL) {
+                    fprintf(file, "Nome: %s, Score: %d\n", playerName, score);
+                    fclose(file);
+                } else {
+                    printf("Erro ao abrir o arquivo score.txt\n");
+                }
+                break;
+            case 3:
+                printf("Jogo encerrado, OBRIGADO!\n");
+                break;
+            default:
+                printf("Opção inválida. Tente novamente.\n");
+        }
+    } while (choice != 3);
 
     return 0;
 }
