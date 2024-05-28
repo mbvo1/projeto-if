@@ -1,5 +1,6 @@
 # Instruções de compilação:
 1- Clonar o repositório https://github.com/rtmr01/projeto-if
+<br>
 2- Baixar o gcc: link MacOS e Link Linux respectivamente: https://youtu.be/HYrXBoDJmcw?si=hmpg8Xgvi0PsHxby // https://youtu.be/9lnvWdigrks?si=GD5yBRjcfanacCvH 
 3- Selecionar o arquivo em SRC "Main.c"
 4- Se estiver no vscode, clicar na seta de run na parte superior da tela
