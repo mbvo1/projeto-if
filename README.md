@@ -1,20 +1,20 @@
-# cli-lib
-Command Line Interface library, for developing CLI applications and games in C. It has functions to access keyboard, screen and manage timing tasks.
+# Instruções de compilação:
+1- Clonar o repositório https://github.com/rtmr01/projeto-if
+2- Baixar o gcc: link MacOS e Link Linux respectivamente: https://youtu.be/HYrXBoDJmcw?si=hmpg8Xgvi0PsHxby // https://youtu.be/9lnvWdigrks?si=GD5yBRjcfanacCvH 
+3- Selecionar o arquivo em SRC "Main.c"
+4- Se estiver no vscode, clicar na seta de run na parte superior da tela
+5- inserir a linha de comando no terminal:  gcc main.c screen.c timer.c keyboard.c -o main
+6- Inserir a outra linha de comando no terminal:  ./main
+ 
+# Instruções de jogabilidade
+Se movimente para esquerda ou direita usando a tecla A para esquerda e a W para direita
 
-## Requirements
-- This library works with the follwing OS:
-   - Linux based (Ubuntu, etc)
-   - MacOS
-- It is necessary to have GCC installed.
+Atire na barra de espaço:Administre os tiros! apenas 3 balas são permitidas até tocar o teto ou algum invasor.
 
-## Usage 
-The file `main.c` has an example of how to use the Keyboard, Screen nd Timer functions. 
+## Equipe 
+Felipe Caminha - fcc3@cesar.school
+José Braz- jbon@cesar.school
+Rodrigo Torres -rtmr@cesar.school
 
-To build this example via command line, just switch to library root directory and type the following command:
-```
-$ gcc ./src/*.c -I./include -o cli-lib-example
-```
-
-To use this library to create your own apps, simply add source and header files to your project and compile it together with your own code, 
-replacing the main.c file to your own.
-
+## Nosso jogo:
+Nosso jogo é uma adaptação do classico space invaders. Seu objetivo é derrotar o máximo de inimigos possível! 
