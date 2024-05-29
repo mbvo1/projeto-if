@@ -19,3 +19,4 @@ Nome: aaa, Score: 70
 Nome: aa, Score: 60
 Nome: ddddsds, Score: 70
 Nome: dddddd, Score: 50
+Nome: dsdsds, Score: 160

@@ -65,7 +65,8 @@ void clearLinkedList(LinkedList* list) {
 }
 
 void initGame() {
-    screenInit(0);
+    screenInit(1); 
+    screenSetColor(WHITE, GREEN); // Mudança de cor de fundo para verde
     keyboardInit();
     timerInit(100);
     srand(time(NULL));
@@ -98,12 +99,13 @@ void drawObject(Object* obj, char symbol) {
 }
 
 void drawScore() {
-    screenGotoxy(MINX, MAXY);
+    screenGotoxy(MINX + 1, MAXY + 1); // Ajusted to prevent overwriting the border
     printf("Score: %d", score);
 }
 
 void drawGame() {
     screenClear();
+    screenSetColor(WHITE, GREEN); // Ensure the screen color remains consistent
     drawObject(&player, PLAYER_SYMBOL);
 
     Object* current = invaders.head;
