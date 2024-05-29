@@ -12,7 +12,7 @@
 6- Inserir a outra linha de comando no terminal:  ./main
  
 # Instruções de jogabilidade
-Se movimente para esquerda ou direita usando a tecla A para esquerda e a W para direita
+Se movimente para esquerda ou direita usando a tecla A para esquerda e a D para direita
 <br>
 Atire na barra de espaço:Administre os tiros! apenas 3 balas são permitidas até tocar o teto ou algum invasor.
 
