@@ -99,13 +99,13 @@ void drawObject(Object* obj, char symbol) {
 }
 
 void drawScore() {
-    screenGotoxy(MINX + 1, MAXY + 1); // Ajusted to prevent overwriting the border
+    screenGotoxy(MINX + 1, MAXY + 1);
     printf("Score: %d", score);
 }
 
 void drawGame() {
     screenClear();
-    screenSetColor(WHITE, GREEN); // Ensure the screen color remains consistent
+    screenSetColor(WHITE, GREEN); 
     drawObject(&player, PLAYER_SYMBOL);
 
     Object* current = invaders.head;
