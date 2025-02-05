@@ -20,6 +20,7 @@ Atire na barra de espaço:Administre os tiros! apenas 3 balas são permitidas at
 Felipe Caminha - fcc3@cesar.school
 José Braz- jbon@cesar.school
 Rodrigo Torres -rtmr@cesar.school
+Marcelo Bresani - mbvo@cesar.school
 
 ## Nosso jogo:
 Nosso jogo é uma adaptação do classico space invaders. Seu objetivo é derrotar o máximo de inimigos possível! 
